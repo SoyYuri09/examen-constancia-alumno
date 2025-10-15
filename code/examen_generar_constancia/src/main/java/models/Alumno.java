@@ -21,6 +21,8 @@ public class Alumno implements ISubject{
     private int semestreInscrito;
     private List<Materia> materias;
     
+    private boolean seleccionado;
+    
     private List<IObserver> observadores;
 
     public Alumno(String nombre, int id, String programa, String cicloEscolar, int semestreInscrito) {
@@ -31,6 +33,7 @@ public class Alumno implements ISubject{
         this.semestreInscrito = semestreInscrito;
         this.materias = new ArrayList<>();
         this.observadores = new ArrayList<>();
+        this.seleccionado = false;
     }
 
     public String getNombre() {
@@ -61,6 +64,42 @@ public class Alumno implements ISubject{
         return materias.size();
     }
 
+    public boolean isSeleccionado() {
+        return seleccionado;
+    }
+
+    public void seleccionar() {
+        this.seleccionado = true;
+    }
+
+    public void cancelarSeleccion() {
+        this.seleccionado = false;
+    }
+
+    public String generarConstancia() {
+        StringBuilder constancia = new StringBuilder();
+        constancia.append("CONSTANCIA ACADÉMICA\n\n");
+        constancia.append("Por este medio se hace constar que el alumno ")
+                  .append(nombre)
+                  .append(", con ID ")
+                  .append(id)
+                  .append(", pertenece al programa educativo ")
+                  .append(programa)
+                  .append(", en el ciclo escolar ")
+                  .append(cicloEscolar)
+                  .append(", cursando actualmente el semestre ")
+                  .append(semestreInscrito)
+                  .append(".\n\n");
+        constancia.append("Actualmente cursa ")
+                  .append(getNumMaterias())
+                  .append(" materias.\n\n");
+        constancia.append("Atentamente,\nLa Coordinación Académica.");
+
+        notificarObservadores("CONSTANCIA_GENERADA");
+
+        return constancia.toString();
+    }
+
     public AlumnoDTO toDTO() {
         List<String> nombresMaterias = new ArrayList<>();
         for (Materia m : materias) {
@@ -70,37 +109,32 @@ public class Alumno implements ISubject{
     }
 
     public static Alumno fromDTO(AlumnoDTO dto) {
-        Alumno alumno = new Alumno(dto.getNombre(), dto.getId(), dto.getPrograma(),
-                dto.getCicloEscolar(), dto.getSemestreInscrito());
-        return alumno;
+        return new Alumno(dto.getNombre(), dto.getId(), dto.getPrograma(),
+                          dto.getCicloEscolar(), dto.getSemestreInscrito());
     }
-    
+
     public static List<AlumnoDTO> buscarAlumnoPorId(List<Alumno> alumnos, String textoId) {
-    List<AlumnoDTO> resultado = new ArrayList<>();
-    if (textoId == null || textoId.isBlank()) {
+        List<AlumnoDTO> resultado = new ArrayList<>();
+        if (textoId == null || textoId.isBlank()) {
+            for (Alumno a : alumnos) {
+                resultado.add(a.toDTO());
+            }
+            return resultado;
+        }
+
         for (Alumno a : alumnos) {
-            resultado.add(a.toDTO());
+            if (String.valueOf(a.getId()).startsWith(textoId)) {
+                resultado.add(a.toDTO());
+            }
         }
         return resultado;
     }
 
-    for (Alumno a : alumnos) {
-        if (String.valueOf(a.getId()).startsWith(textoId)) {
-            resultado.add(a.toDTO());
-        }
-    }
-    return resultado;
-}
+    @Override
+    public void agregarObserver(IObserver observador) { observadores.add(observador); }
 
     @Override
-    public void agregarObserver(IObserver observador) {
-         observadores.add(observador);
-    }
-
-    @Override
-    public void quitarObserver(IObserver observador) {
-        observadores.remove(observador);
-    }
+    public void quitarObserver(IObserver observador) { observadores.remove(observador); }
 
     @Override
     public void notificarObservadores(String mensaje) {

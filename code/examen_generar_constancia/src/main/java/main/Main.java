@@ -48,20 +48,22 @@ public class Main {
         listaAlumnos.add(alumno4);
         listaAlumnos.add(alumno5);
 
-        // Crear controlador con lista de alumnos
         ControlConstancia controlador = new ControlConstancia(listaAlumnos);
 
-        // Crear y mostrar vista
         SwingUtilities.invokeLater(() -> {
             VistaConstancia vista = new VistaConstancia();
-            vista.setVisible(true);
 
-            // Mostrar todos los alumnos en la tabla al inicio (solo Id y Nombre)
-            List<AlumnoDTO> dtos = new ArrayList<>();
             for (Alumno a : listaAlumnos) {
-                dtos.add(a.toDTO());
+                a.agregarObserver(vista);
             }
-            vista.mostrarAlumnosEnTabla(dtos);
+
+            vista.mostrarAlumnosEnTabla(controlador.cargarAlumnos());
+
+            vista.iniciarBuscador(controlador);
+
+            vista.iniciarSeleccionAlumno(controlador);
+            
+            vista.setVisible(true);
         });
     }
 }

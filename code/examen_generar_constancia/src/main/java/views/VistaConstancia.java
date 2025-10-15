@@ -1,24 +1,38 @@
 package views;
+import controllers.ControlConstancia;
 import dtos.AlumnoDTO;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.LayoutManager;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.table.DefaultTableModel;
+import models.Alumno;
+import models.IObserver;
+import models.ISubject;
 /**
  *
  * @author Usuario
  */
-public class VistaConstancia extends javax.swing.JFrame {
+public class VistaConstancia extends javax.swing.JFrame implements IObserver{
     
     private String RUTA_IMAGEN_ICONO_APLICACION = "/logoGenerarConstancia.png";
+    private Font FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA = new Font("Verdana", 1, 12);
+    private Font FUENTE_LETRA_TITULO_PANEL_TABLA = new Font("Verdana", 1, 24);
     
     /**
      * Creates new form VistaConstancia
@@ -33,36 +47,148 @@ public class VistaConstancia extends javax.swing.JFrame {
         setIconImage(iconoPropio);
     }
 
-    // Dentro de VistaConstancia
     public void mostrarAlumnosEnTabla(List<AlumnoDTO> listaAlumnos) {
-        // Crear un modelo de tabla limpio
         DefaultTableModel modelo = new DefaultTableModel() {
             @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Hacer que la tabla no sea editable
-            }
+            public boolean isCellEditable(int row, int column) { return false; }
         };
-
-        // Definir columnas
         modelo.addColumn("Id");
         modelo.addColumn("Alumno");
 
-        // Agregar filas de alumnos
         if (listaAlumnos != null) {
             for (AlumnoDTO alumno : listaAlumnos) {
-                Object[] fila = new Object[2];
-                fila[0] = alumno.getId();
-                fila[1] = alumno.getNombre();
+                Object[] fila = { alumno.getId(), alumno.getNombre() };
                 modelo.addRow(fila);
             }
         }
 
-        // Asignar modelo a la tabla
         tableAlumnos.setModel(modelo);
-
-        // Ajustar ancho de columnas (opcional)
         tableAlumnos.getColumnModel().getColumn(0).setPreferredWidth(50);
         tableAlumnos.getColumnModel().getColumn(1).setPreferredWidth(200);
+    }
+
+    public void iniciarBuscador(ControlConstancia controlador) {
+        textBuscarAlumno.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) { filtrar(); }
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) { filtrar(); }
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) { filtrar(); }
+
+            private void filtrar() {
+                if (!controlador.isBusquedaBloqueada()) {
+                    String texto = textBuscarAlumno.getText().trim();
+                    List<AlumnoDTO> filtrados = controlador.buscarAlumnosPorId(texto);
+                    mostrarAlumnosEnTabla(filtrados);
+                }
+            }
+        });
+    }
+
+    public void iniciarSeleccionAlumno(ControlConstancia controlador) {
+        tableAlumnos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int fila = tableAlumnos.getSelectedRow();
+                if (fila >= 0 && !controlador.isBusquedaBloqueada()) {
+                    int idAlumno = (int) tableAlumnos.getValueAt(fila, 0);
+                    controlador.seleccionarAlumno(idAlumno);
+
+                    // Bloquear el campo de búsqueda
+                    textBuscarAlumno.setEnabled(false);
+                    tableAlumnos.setEnabled(false);
+
+                    // Obtener datos del alumno seleccionado
+                    Alumno alumno = controlador.getAlumnoSeleccionado();
+
+                    // Limpiar panel antes de agregar datos
+                    panelConstancia.removeAll();
+
+                    // Mantener tamaño fijo del panel
+                    panelConstancia.setPreferredSize(new Dimension(480, panelConstancia.getHeight()));
+                    panelConstancia.setMaximumSize(new Dimension(480, panelConstancia.getHeight()));
+
+                    // Layout vertical general
+                    panelConstancia.setLayout(new BoxLayout(panelConstancia, BoxLayout.Y_AXIS));
+
+                    // Título centrado
+                    JLabel titulo = new JLabel("Datos del alumno");
+                    titulo.setFont(FUENTE_LETRA_TITULO_PANEL_TABLA);
+                    titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    panelConstancia.add(Box.createRigidArea(new Dimension(0, 35)));
+                    panelConstancia.add(titulo);
+                    panelConstancia.add(Box.createRigidArea(new Dimension(0, 20)));
+
+                    // Panel para información del alumno con margen interno
+                    JPanel infoPanel = new JPanel();
+                    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+                    infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    infoPanel.setOpaque(false);
+                    infoPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 20, 0, 20)); // margen izquierdo y derecho
+
+                    JLabel nombre = new JLabel("Nombre completo: " + alumno.getNombre());
+                    JLabel programa = new JLabel("Programa: " + alumno.getPrograma());
+                    JLabel ciclo = new JLabel("Ciclo escolar: " + alumno.getCicloEscolar());
+                    JLabel semestre = new JLabel("Semestre inscrito: " + alumno.getSemestreInscrito());
+                    JLabel numMaterias = new JLabel("Cantidad de materias: " + alumno.getNumMaterias());
+
+                    nombre.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
+                    programa.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
+                    ciclo.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
+                    semestre.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
+                    numMaterias.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
+
+                    nombre.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    programa.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    ciclo.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    semestre.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    numMaterias.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                    infoPanel.add(nombre);
+                    infoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                    infoPanel.add(programa);
+                    infoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                    infoPanel.add(ciclo);
+                    infoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                    infoPanel.add(semestre);
+                    infoPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+                    infoPanel.add(numMaterias);
+
+                    panelConstancia.add(infoPanel);
+                    panelConstancia.add(Box.createRigidArea(new Dimension(0, 20)));
+
+                    // Panel para botones
+                    JPanel botonesPanel = new JPanel();
+                    botonesPanel.setOpaque(false);
+                    botonesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    botonesPanel.setLayout(new BoxLayout(botonesPanel, BoxLayout.X_AXIS));
+
+                    JButton btnCancelar = new JButton("Cancelar");
+                    JButton btnGenerar = new JButton("Generar constancia");
+                    
+                    btnGenerar.setBackground(new Color(181, 242, 148));
+                    btnGenerar.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
+                    btnCancelar.setBackground(new Color(247, 153, 153));
+                    btnCancelar.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
+
+                    botonesPanel.add(btnCancelar);
+                    botonesPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+                    botonesPanel.add(btnGenerar);
+
+                    panelConstancia.add(botonesPanel);
+                    panelConstancia.add(Box.createVerticalGlue());
+
+                    panelConstancia.revalidate();
+                    panelConstancia.repaint();
+                }
+            }
+        });
+    }
+    
+    @Override
+    public void notificar(String mensaje, ISubject origen) {
+        System.out.println("Notificación: " + mensaje);
     }
     
     /**
@@ -94,8 +220,11 @@ public class VistaConstancia extends javax.swing.JFrame {
         labelTituloTabla.setFont(new java.awt.Font("Verdana", 1, 24)); // NOI18N
         labelTituloTabla.setForeground(new java.awt.Color(0, 0, 0));
         labelTituloTabla.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        labelTituloTabla.setText("Buscar alumno:");
+        labelTituloTabla.setText("Buscar alumno");
 
+        textBuscarAlumno.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+
+        tableAlumnos.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
         tableAlumnos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
