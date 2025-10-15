@@ -20,10 +20,13 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import models.Alumno;
 import models.IObserver;
 import models.ISubject;
+import models.Materia;
 /**
  *
  * @author Usuario
@@ -179,6 +182,95 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                     panelConstancia.add(botonesPanel);
                     panelConstancia.add(Box.createVerticalGlue());
 
+                    btnCancelar.addActionListener(ev -> {
+                        // Lógica del controlador
+                        controlador.cancelarConstancia();
+
+                        // Limpiar panel y restaurar estado
+                        panelConstancia.removeAll();
+                        panelConstancia.revalidate();
+                        panelConstancia.repaint();
+
+                        textBuscarAlumno.setEnabled(true);
+                        tableAlumnos.setEnabled(true);
+                    });
+
+                    // Acción del botón Generar constancia
+                    btnGenerar.addActionListener(ev -> {
+                        // Limpiar panel actual
+                        panelConstancia.removeAll();
+                        panelConstancia.setLayout(new BoxLayout(panelConstancia, BoxLayout.Y_AXIS));
+
+                        // Título
+                        JLabel tituloConstancia = new JLabel("Constancia de Inscripción");
+                        tituloConstancia.setFont(FUENTE_LETRA_TITULO_PANEL_TABLA);
+                        tituloConstancia.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        panelConstancia.add(Box.createRigidArea(new Dimension(0, 35)));
+                        panelConstancia.add(tituloConstancia);
+                        panelConstancia.add(Box.createRigidArea(new Dimension(0, 30)));
+
+                        // Texto descriptivo
+                        JTextArea texto = new JTextArea();
+                        texto.setEditable(false);
+                        texto.setLineWrap(true);
+                        texto.setWrapStyleWord(true);
+                        texto.setOpaque(false);
+                        texto.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
+
+                        texto.setBorder(javax.swing.BorderFactory.createEmptyBorder(15, 25, 15, 25));
+                        
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("Por este medio hacemos constar que el alumno ")
+                          .append(alumno.getNombre())
+                          .append(" perteneciente a la carrera de ")
+                          .append(alumno.getPrograma())
+                          .append(" se encuentra inscrito en el ciclo escolar ")
+                          .append(alumno.getCicloEscolar())
+                          .append(" en su semestre número ")
+                          .append(alumno.getSemestreInscrito())
+                          .append(", cursando las siguientes materias:\n\n");
+
+                        // Agregar lista de materias
+                        for (Materia materia : alumno.getMaterias()) {
+                            sb.append("• ").append(materia.getNombre()).append("\n");
+                        }
+
+                        texto.setText(sb.toString());
+                        texto.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+                        JScrollPane scrollTexto = new JScrollPane(texto);
+                        scrollTexto.setBorder(null);
+                        scrollTexto.setOpaque(false);
+                        scrollTexto.getViewport().setOpaque(false);
+                        scrollTexto.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        scrollTexto.setPreferredSize(new Dimension(450, 300));
+
+                        panelConstancia.add(scrollTexto);
+                        panelConstancia.add(Box.createRigidArea(new Dimension(0, 30)));
+
+                        // Botón Regresar
+                        JButton btnRegresar = new JButton("Regresar");
+                        btnRegresar.setBackground(new Color(181, 242, 148));
+                        btnRegresar.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
+                        btnRegresar.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+                        panelConstancia.add(btnRegresar);
+                        panelConstancia.add(Box.createVerticalGlue());
+
+                        // Acción del botón Regresar
+                        btnRegresar.addActionListener(backEv -> {
+                            controlador.cancelarConstancia();
+                            panelConstancia.removeAll();
+                            panelConstancia.revalidate();
+                            panelConstancia.repaint();
+                            textBuscarAlumno.setEnabled(true);
+                            tableAlumnos.setEnabled(true);
+                        });
+
+                        panelConstancia.revalidate();
+                        panelConstancia.repaint();
+                    });
+                    
                     panelConstancia.revalidate();
                     panelConstancia.repaint();
                 }
