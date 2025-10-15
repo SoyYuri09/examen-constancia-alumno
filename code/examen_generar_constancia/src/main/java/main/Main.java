@@ -1,7 +1,6 @@
 package main;
 
 import controllers.ControlConstancia;
-import dtos.AlumnoDTO;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -55,7 +54,7 @@ public class Main {
         alumno3.getMaterias().add(m10);
         alumno3.getMaterias().add(m17);
         alumno3.getMaterias().add(m10);
-        alumno3.getMaterias().add(m18);
+        alumno3.getMaterias().add(m7);
         alumno3.getMaterias().add(m1);
         alumno3.getMaterias().add(m16);
         alumno3.getMaterias().add(m3);
