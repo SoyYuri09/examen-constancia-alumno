@@ -1,4 +1,5 @@
 package views;
+import dtos.AlumnoDTO;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -7,8 +8,10 @@ import java.awt.Image;
 import java.awt.LayoutManager;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Usuario
@@ -30,6 +33,38 @@ public class VistaConstancia extends javax.swing.JFrame {
         setIconImage(iconoPropio);
     }
 
+    // Dentro de VistaConstancia
+    public void mostrarAlumnosEnTabla(List<AlumnoDTO> listaAlumnos) {
+        // Crear un modelo de tabla limpio
+        DefaultTableModel modelo = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Hacer que la tabla no sea editable
+            }
+        };
+
+        // Definir columnas
+        modelo.addColumn("Id");
+        modelo.addColumn("Alumno");
+
+        // Agregar filas de alumnos
+        if (listaAlumnos != null) {
+            for (AlumnoDTO alumno : listaAlumnos) {
+                Object[] fila = new Object[2];
+                fila[0] = alumno.getId();
+                fila[1] = alumno.getNombre();
+                modelo.addRow(fila);
+            }
+        }
+
+        // Asignar modelo a la tabla
+        tableAlumnos.setModel(modelo);
+
+        // Ajustar ancho de columnas (opcional)
+        tableAlumnos.getColumnModel().getColumn(0).setPreferredWidth(50);
+        tableAlumnos.getColumnModel().getColumn(1).setPreferredWidth(200);
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,7 +79,7 @@ public class VistaConstancia extends javax.swing.JFrame {
         labelTituloTabla = new javax.swing.JLabel();
         textBuscarAlumno = new javax.swing.JTextField();
         scrollPaneTabla = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableAlumnos = new javax.swing.JTable();
         panelConstancia = new RoundedPanel(50, new Color(224,224,224));
         panelTitulo = new javax.swing.JPanel();
         labelTitulo = new javax.swing.JLabel();
@@ -61,18 +96,18 @@ public class VistaConstancia extends javax.swing.JFrame {
         labelTituloTabla.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelTituloTabla.setText("Buscar alumno:");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableAlumnos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Id", "Alumno"
             }
         ));
-        scrollPaneTabla.setViewportView(jTable1);
+        scrollPaneTabla.setViewportView(tableAlumnos);
 
         javax.swing.GroupLayout panelTablaLayout = new javax.swing.GroupLayout(panelTabla);
         panelTabla.setLayout(panelTablaLayout);
@@ -176,7 +211,6 @@ public class VistaConstancia extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel labelTitulo;
     private javax.swing.JLabel labelTituloTabla;
     private javax.swing.JPanel panelConstancia;
@@ -184,6 +218,7 @@ public class VistaConstancia extends javax.swing.JFrame {
     private javax.swing.JPanel panelTabla;
     private javax.swing.JPanel panelTitulo;
     private javax.swing.JScrollPane scrollPaneTabla;
+    private javax.swing.JTable tableAlumnos;
     private javax.swing.JTextField textBuscarAlumno;
     // End of variables declaration//GEN-END:variables
 

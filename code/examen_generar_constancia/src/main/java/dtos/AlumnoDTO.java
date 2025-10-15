@@ -1,7 +1,9 @@
 package dtos;
 
+import java.util.ArrayList;
 import java.util.List;
-
+import models.Alumno;
+import models.Materia;
 /**
  * AlumnoDTO.java
  * 
@@ -87,5 +89,24 @@ public class AlumnoDTO {
         return "AlumnoDTO{" + "nombre=" + nombre + ", id=" + id + ", programa=" + programa + ", cicloEscolar=" + cicloEscolar + ", semestreInscrito=" + semestreInscrito + ", materias=" + materias + '}';
     }
     
-    
+    public static AlumnoDTO fromModel(Alumno alumno) {
+        List<String> nombresMaterias = new ArrayList<>();
+        for (Materia m : alumno.getMaterias()) {
+            nombresMaterias.add(m.getNombre());
+        }
+
+        return new AlumnoDTO(
+                alumno.getNombre(),
+                alumno.getId(),
+                alumno.getPrograma(),
+                alumno.getCicloEscolar(),
+                alumno.getSemestreInscrito(),
+                nombresMaterias
+        );
+    }
+
+    public Alumno toModel() {
+        Alumno alumno = new Alumno(nombre, id, programa, cicloEscolar, semestreInscrito);
+        return alumno;
+    }
 }

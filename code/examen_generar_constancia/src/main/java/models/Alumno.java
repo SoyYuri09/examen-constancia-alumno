@@ -1,4 +1,5 @@
 package models;
+import dtos.AlumnoDTO;
 import java.util.ArrayList;
 import java.util.List;
 /**
@@ -11,7 +12,7 @@ import java.util.List;
  * ID: 00000252583
  *
  */
-public class Alumno {
+public class Alumno implements ISubject{
     
     private String nombre;
     private int id;
@@ -19,6 +20,8 @@ public class Alumno {
     private String cicloEscolar;
     private int semestreInscrito;
     private List<Materia> materias;
+    
+    private List<IObserver> observadores;
 
     public Alumno(String nombre, int id, String programa, String cicloEscolar, int semestreInscrito) {
         this.nombre = nombre;
@@ -27,6 +30,7 @@ public class Alumno {
         this.cicloEscolar = cicloEscolar;
         this.semestreInscrito = semestreInscrito;
         this.materias = new ArrayList<>();
+        this.observadores = new ArrayList<>();
     }
 
     public String getNombre() {
@@ -56,17 +60,53 @@ public class Alumno {
     public int getNumMaterias(){
         return materias.size();
     }
-    
-    public static List<Alumno> buscarAlumnoPorId(List<Alumno> alumnos, String idParcial) {
-        List<Alumno> coincidencias = new ArrayList<>();
 
-        for (Alumno a : alumnos) {
-            if (String.valueOf(a.getId()).contains(idParcial)) {
-                coincidencias.add(a);
-            }
+    public AlumnoDTO toDTO() {
+        List<String> nombresMaterias = new ArrayList<>();
+        for (Materia m : materias) {
+            nombresMaterias.add(m.getNombre());
         }
+        return new AlumnoDTO(nombre, id, programa, cicloEscolar, semestreInscrito, nombresMaterias);
+    }
 
-        return coincidencias;
+    public static Alumno fromDTO(AlumnoDTO dto) {
+        Alumno alumno = new Alumno(dto.getNombre(), dto.getId(), dto.getPrograma(),
+                dto.getCicloEscolar(), dto.getSemestreInscrito());
+        return alumno;
+    }
+    
+    public static List<AlumnoDTO> buscarAlumnoPorId(List<Alumno> alumnos, String textoId) {
+    List<AlumnoDTO> resultado = new ArrayList<>();
+    if (textoId == null || textoId.isBlank()) {
+        for (Alumno a : alumnos) {
+            resultado.add(a.toDTO());
+        }
+        return resultado;
+    }
+
+    for (Alumno a : alumnos) {
+        if (String.valueOf(a.getId()).startsWith(textoId)) {
+            resultado.add(a.toDTO());
+        }
+    }
+    return resultado;
+}
+
+    @Override
+    public void agregarObserver(IObserver observador) {
+         observadores.add(observador);
+    }
+
+    @Override
+    public void quitarObserver(IObserver observador) {
+        observadores.remove(observador);
+    }
+
+    @Override
+    public void notificarObservadores(String mensaje) {
+        for (IObserver o : observadores) {
+            o.notificar(mensaje, this);
+        }
     }
     
 }
