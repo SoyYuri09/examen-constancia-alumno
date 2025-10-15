@@ -34,14 +34,37 @@ public class Alumno implements ISubject{
         this.seleccionado = false;
     }
 
-    public String getNombre() { return nombre; }
-    public int getId() { return id; }
-    public String getPrograma() { return programa; }
-    public String getCicloEscolar() { return cicloEscolar; }
-    public int getSemestreInscrito() { return semestreInscrito; }
-    public List<Materia> getMaterias() { return materias; }
-    public int getNumMaterias() { return materias.size(); }
-    public boolean isSeleccionado() { return seleccionado; }
+    public String getNombre() { 
+        return nombre; 
+    
+    }
+    public int getId() { 
+        return id; 
+    }
+    
+    public String getPrograma() { 
+        return programa; 
+    }
+    
+    public String getCicloEscolar() { 
+        return cicloEscolar; 
+    }
+    
+    public int getSemestreInscrito() { 
+        return semestreInscrito; 
+    }
+    
+    public List<Materia> getMaterias() { 
+        return materias; 
+    }
+    
+    public int getNumMaterias() { 
+        return materias.size(); 
+    }
+    
+    public boolean isSeleccionado() { 
+        return seleccionado; 
+    }
 
     public void seleccionar() {
         this.seleccionado = true;
@@ -51,6 +74,11 @@ public class Alumno implements ISubject{
     public void cancelarSeleccion() {
         this.seleccionado = false;
         notificarObservadores("ALUMNO_CANCELADO");
+    }
+    
+    public void regresarBusqueda() {
+        this.seleccionado = false;
+        notificarObservadores("REGRESAR_A_BUSQUEDA");
     }
 
     public String generarConstancia() {
@@ -95,14 +123,20 @@ public class Alumno implements ISubject{
 
     // Métodos Observer
     @Override
-    public void agregarObserver(IObserver observador) { observadores.add(observador); }
+    public void agregarObserver(IObserver observador) { 
+        observadores.add(observador); 
+    }
 
     @Override
-    public void quitarObserver(IObserver observador) { observadores.remove(observador); }
+    public void quitarObserver(IObserver observador) { 
+        observadores.remove(observador); 
+    }
 
     @Override
     public void notificarObservadores(String mensaje) {
-        for (IObserver o : observadores) o.notificar(mensaje, this);
+        for (IObserver o : observadores){
+            o.notificar(mensaje, this);
+        }
     }
     
 }

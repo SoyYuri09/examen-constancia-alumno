@@ -60,6 +60,14 @@ public class ControlConstancia {
             busquedaBloqueada = false;
         }
     }
+    
+    public void regresarBusqueda() {
+        if (alumnoSeleccionado != null) {
+            alumnoSeleccionado.regresarBusqueda();
+            alumnoSeleccionado = null;
+            busquedaBloqueada = false;
+        }
+    }
 
     public Alumno getAlumnoSeleccionado() { 
         return alumnoSeleccionado; 

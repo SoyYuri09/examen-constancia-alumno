@@ -197,6 +197,8 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
 
                     // Acción del botón Generar constancia
                     btnGenerar.addActionListener(ev -> {
+                        
+                        controlador.generarConstancia();
                         // Limpiar panel actual
                         panelConstancia.removeAll();
                         panelConstancia.setLayout(new BoxLayout(panelConstancia, BoxLayout.Y_AXIS));
@@ -259,7 +261,7 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
 
                         // Acción del botón Regresar
                         btnRegresar.addActionListener(backEv -> {
-                            controlador.cancelarConstancia();
+                            controlador.regresarBusqueda();
                             panelConstancia.removeAll();
                             panelConstancia.revalidate();
                             panelConstancia.repaint();
@@ -280,7 +282,20 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
     
     @Override
     public void notificar(String mensaje, ISubject origen) {
-        System.out.println("Notificación: " + mensaje);
+        switch (mensaje) {
+            case "ALUMNO_SELECCIONADO":
+                System.out.println("Se ha seleccionado un alumno.");
+                break;
+            case "ALUMNO_CANCELADO":
+                System.out.println("Se ha cancelado la seleccion del alumno.");
+                break;
+                case "REGRESAR_A_BUSQUEDA":
+                System.out.println("Se ha regresado a la busqueda de alumnos.");
+                break;
+            case "CONSTANCIA_GENERADA":
+                System.out.println("Se ha generado la constancia del alumno.");
+                break;
+        }
     }
     
     /**
