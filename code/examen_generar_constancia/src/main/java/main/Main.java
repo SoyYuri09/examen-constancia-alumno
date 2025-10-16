@@ -69,7 +69,7 @@ public class Main {
         alumno4.getMaterias().add(m5);
         alumno4.getMaterias().add(m13);
         
-        Alumno alumno5 = new Alumno("Ramón Valencia Hernández", 252678, "Ing. Software", "Enero-Mayo", 5);
+        Alumno alumno5 = new Alumno("Ramón Valencia Hernández", 252978, "Ing. Software", "Enero-Mayo", 5);
         alumno5.getMaterias().add(m10);
         alumno5.getMaterias().add(m17);
         alumno5.getMaterias().add(m10);
