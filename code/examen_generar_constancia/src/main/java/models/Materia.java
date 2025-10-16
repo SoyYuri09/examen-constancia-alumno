@@ -11,14 +11,22 @@ package models;
  */
 public class Materia {
     
+    //Declaración de variables
     private String nombre;
     private int id;
 
+    /**
+     * Constructor que incializa todos los atributos de la clase
+     * 
+     * @param nombre Nombre de la materia
+     * @param id Id de la materia
+     */
     public Materia(String nombre, int id) {
         this.nombre = nombre;
         this.id = id;
     }
 
+    //Getters
     public String getNombre() {
         return nombre;
     }

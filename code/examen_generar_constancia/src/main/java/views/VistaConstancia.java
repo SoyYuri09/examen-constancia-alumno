@@ -28,17 +28,24 @@ import models.IObserver;
 import models.ISubject;
 import models.Materia;
 /**
+ * VistaConstancia.java
  *
- * @author Usuario
+ * Clase de java que extiende de JFrame para manejar
+ * las vistas del proyecto
+ * 
+ * @author Yuri Germán García López
+ * ID: 00000252583
+ *
  */
 public class VistaConstancia extends javax.swing.JFrame implements IObserver{
     
+    //Declaración de constantes para la interfaz gráfica
     private String RUTA_IMAGEN_ICONO_APLICACION = "/logoGenerarConstancia.png";
     private Font FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA = new Font("Verdana", 1, 12);
     private Font FUENTE_LETRA_TITULO_PANEL_TABLA = new Font("Verdana", 1, 24);
-    
+
     /**
-     * Creates new form VistaConstancia
+     * Inicializar componentes de la forma
      */
     public VistaConstancia() {
         initComponents();
@@ -50,6 +57,12 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
         setIconImage(iconoPropio);
     }
 
+    /**
+     * Método que muestra en la tabla la lista 
+     * de alumnos en formato DTO.
+     * 
+     * @param listaAlumnos Lista de alumnos a mostrar en la tabla.
+     */
     public void mostrarAlumnosEnTabla(List<AlumnoDTO> listaAlumnos) {
         DefaultTableModel modelo = new DefaultTableModel() {
             @Override
@@ -70,6 +83,13 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
         tableAlumnos.getColumnModel().getColumn(1).setPreferredWidth(200);
     }
 
+    /**
+     * Este método inicializa el buscador de alumnos en tiempo real
+     * Aquí, cada vez que el usuario escribe en el campo de texto,
+     * se filtran los resultados utilizando el controlador.
+     * 
+     * @param controlador Instancia de ControlConstancia.
+     */
     public void iniciarBuscador(ControlConstancia controlador) {
         textBuscarAlumno.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
             @Override
@@ -89,6 +109,13 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
         });
     }
 
+    /**
+     * Método que configura la acción al seleccionar un alumno desde la tabla
+     * bloqueando la búsqueda y mostrando los datos del alumno seleccionado
+     * junto con los botones "Cancelar" y "Generar constancia".
+     * 
+     * @param controlador Instancia del controlador
+     */
     public void iniciarSeleccionAlumno(ControlConstancia controlador) {
         tableAlumnos.addMouseListener(new MouseAdapter() {
             @Override
@@ -98,24 +125,24 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                     int idAlumno = (int) tableAlumnos.getValueAt(fila, 0);
                     controlador.seleccionarAlumno(idAlumno);
 
-                    // Bloquear el campo de búsqueda
+                    //Bloquear el campo de búsqueda
                     textBuscarAlumno.setEnabled(false);
                     tableAlumnos.setEnabled(false);
 
-                    // Obtener datos del alumno seleccionado
+                    //Obtener datos del alumno seleccionado
                     Alumno alumno = controlador.getAlumnoSeleccionado();
 
-                    // Limpiar panel antes de agregar datos
+                    //Limpiar panel antes de agregar datos
                     panelConstancia.removeAll();
 
-                    // Mantener tamaño fijo del panel
+                    //Mantener tamaño fijo del panel
                     panelConstancia.setPreferredSize(new Dimension(480, panelConstancia.getHeight()));
                     panelConstancia.setMaximumSize(new Dimension(480, panelConstancia.getHeight()));
 
-                    // Layout vertical general
+                    //Layout vertical general
                     panelConstancia.setLayout(new BoxLayout(panelConstancia, BoxLayout.Y_AXIS));
 
-                    // Título centrado
+                    //Título centrado
                     JLabel titulo = new JLabel("Datos del alumno");
                     titulo.setFont(FUENTE_LETRA_TITULO_PANEL_TABLA);
                     titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -123,7 +150,7 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                     panelConstancia.add(titulo);
                     panelConstancia.add(Box.createRigidArea(new Dimension(0, 20)));
 
-                    // Panel para información del alumno con margen interno
+                    //Panel para información del alumno con margen interno
                     JPanel infoPanel = new JPanel();
                     infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
                     infoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -161,7 +188,7 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                     panelConstancia.add(infoPanel);
                     panelConstancia.add(Box.createRigidArea(new Dimension(0, 20)));
 
-                    // Panel para botones
+                    //Panel para botones
                     JPanel botonesPanel = new JPanel();
                     botonesPanel.setOpaque(false);
                     botonesPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -183,10 +210,10 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                     panelConstancia.add(Box.createVerticalGlue());
 
                     btnCancelar.addActionListener(ev -> {
-                        // Lógica del controlador
+                        //Lógica del controlador
                         controlador.cancelarConstancia();
 
-                        // Limpiar panel y restaurar estado
+                        //Limpiar panel y restaurar estado
                         panelConstancia.removeAll();
                         panelConstancia.revalidate();
                         panelConstancia.repaint();
@@ -195,15 +222,15 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                         tableAlumnos.setEnabled(true);
                     });
 
-                    // Acción del botón Generar constancia
+                    //Acción del botón Generar constancia
                     btnGenerar.addActionListener(ev -> {
                         
                         controlador.generarConstancia();
-                        // Limpiar panel actual
+                        //Limpiar panel actual
                         panelConstancia.removeAll();
                         panelConstancia.setLayout(new BoxLayout(panelConstancia, BoxLayout.Y_AXIS));
 
-                        // Título
+                        //Título
                         JLabel tituloConstancia = new JLabel("Constancia de Inscripción");
                         tituloConstancia.setFont(FUENTE_LETRA_TITULO_PANEL_TABLA);
                         tituloConstancia.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -211,7 +238,7 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                         panelConstancia.add(tituloConstancia);
                         panelConstancia.add(Box.createRigidArea(new Dimension(0, 30)));
 
-                        // Texto descriptivo
+                        //Texto descriptivo
                         JTextArea texto = new JTextArea();
                         texto.setEditable(false);
                         texto.setLineWrap(true);
@@ -232,7 +259,7 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                           .append(alumno.getSemestreInscrito())
                           .append(", cursando las siguientes materias:\n\n");
 
-                        // Agregar lista de materias
+                        //Agregar lista de materias
                         for (Materia materia : alumno.getMaterias()) {
                             sb.append("• ").append(materia.getNombre()).append("\n");
                         }
@@ -250,7 +277,7 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                         panelConstancia.add(scrollTexto);
                         panelConstancia.add(Box.createRigidArea(new Dimension(0, 30)));
 
-                        // Botón Regresar
+                        //Botón Regresar
                         JButton btnRegresar = new JButton("Regresar");
                         btnRegresar.setBackground(new Color(181, 242, 148));
                         btnRegresar.setFont(FUENTE_LETRA_TEXTO_PANEL_CONSTANCIA);
@@ -259,7 +286,7 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
                         panelConstancia.add(btnRegresar);
                         panelConstancia.add(Box.createVerticalGlue());
 
-                        // Acción del botón Regresar
+                        //Acción del botón Regresar
                         btnRegresar.addActionListener(backEv -> {
                             controlador.regresarBusqueda();
                             panelConstancia.removeAll();
@@ -280,6 +307,13 @@ public class VistaConstancia extends javax.swing.JFrame implements IObserver{
         });
     }
     
+    /**
+     * Método que reacciona ante notificaciones emitidas por los
+     * objetos observados
+     * 
+     * @param mensaje Mensaje del evento ocurrido
+     * @param origen Instancia que generó el evento
+     */
     @Override
     public void notificar(String mensaje, ISubject origen) {
         switch (mensaje) {
